@@ -1,0 +1,37 @@
+services:
+  backend:
+    build: ./simpleapi
+    container_name: apidocker
+    networks:
+      - app-network
+    depends_on:
+      - database
+      
+  database:
+    build: ./Database
+    container_name: mydatabase
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: usr
+      POSTGRES_PASSWORD: pwd
+    networks:
+      - app-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  httpd:
+    build: ./HttpServer
+    container_name: httpd-server
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
