@@ -16,8 +16,6 @@ services:
       POSTGRES_PASSWORD: pwd
     networks:
       - app-network
-    volumes:
-      - db-data:/var/lib/postgresql/data
 
   httpd:
     build: ./HttpServer
