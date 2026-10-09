@@ -59,6 +59,14 @@ jobs:
           push: true
           tags: blueph0enix/my-httpd:1.0
 
+      - name: Build and push front
+        uses: docker/build-push-action@v6
+        with:
+          context: ./front
+          push: true
+          tags: blueph0enix/my-front:1.0
+
+
   deploy:
     needs: build-and-push
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

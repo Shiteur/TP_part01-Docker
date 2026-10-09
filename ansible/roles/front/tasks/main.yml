@@ -1,0 +1,9 @@
+- name: Run front
+  docker_container:
+    name: front
+    image: blueph0enix/my-front:1.0
+    state: started
+    pull: true
+    restart_policy: always
+    networks:
+      - name: app-network
