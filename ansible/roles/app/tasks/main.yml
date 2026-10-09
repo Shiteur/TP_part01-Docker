@@ -1,0 +1,13 @@
+- name: Run API
+  docker_container:
+    name: apidocker
+    image: blueph0enix/my-backend:1.0
+    state: started
+    pull: true
+    restart_policy: always
+    networks:
+      - name: app-network
+    env:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://mydatabase:5432/db"
+      SPRING_DATASOURCE_USERNAME: "usr"
+      SPRING_DATASOURCE_PASSWORD: "pwd"

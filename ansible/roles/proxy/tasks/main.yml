@@ -1,0 +1,11 @@
+- name: Run proxy
+  docker_container:
+    name: httpd-server
+    image: blueph0enix/my-httpd:1.0
+    state: started
+    pull: true
+    restart_policy: always
+    networks:
+      - name: app-network
+    ports:
+      - "80:80"

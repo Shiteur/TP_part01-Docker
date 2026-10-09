@@ -1,0 +1,13 @@
+- name: Run database
+  docker_container:
+    name: mydatabase
+    image: blueph0enix/my-database:1.0
+    state: started
+    pull: true
+    restart_policy: always
+    networks:
+      - name: app-network
+    env:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "usr"
+      POSTGRES_PASSWORD: "pwd"
