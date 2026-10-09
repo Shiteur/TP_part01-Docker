@@ -25,3 +25,28 @@ jobs:
       # build + exécute les tests unitaires et d'intégration (Testcontainers lance un Postgres temporaire)
       - name: Build and test with Maven
         run: mvn clean verify --file ./simpleapi/pom.xml
+
+  build-and-push:
+    needs: test-backend
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ansible
+        run: |
+          pip install ansible
+          ansible-galaxy collection install community.docker
+
+      - name: Set up SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 400 ~/.ssh/deploy_key
+          ssh-keyscan -H thomas.danjou.takima.school >> ~/.ssh/known_hosts
+
+      - name: Run playbook
+        working-directory : ansible
+        run: >
+          ansible-playbook -i inventories/setup.yml playbook.yml
