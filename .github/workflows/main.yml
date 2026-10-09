@@ -32,6 +32,39 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./simpleapi
+          push: true
+          tags: blueph0enix/simpleapi:1.0
+
+      - name: Build and database
+        uses: docker/build-push-action@v6
+        with:
+          context: ./Database
+          push: true
+          tags: blueph0enix/my-database:1.0
+
+      - name: Build and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          context: ./HttpServer
+          push: true
+          tags: blueph0enix/my-httpd:1.0
+
+  deploy:
+    needs: build-and-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      
       - name: Install Ansible
         run: |
           pip install ansible
