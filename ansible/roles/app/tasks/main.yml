@@ -8,6 +8,6 @@
     networks:
       - name: app-network
     env:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://mydatabase:5432/db"
-      SPRING_DATASOURCE_USERNAME: "usr"
-      SPRING_DATASOURCE_PASSWORD: "pwd"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://mydatabase:5432/{{ db_name }}"
+      SPRING_DATASOURCE_USERNAME: "{{ db_user }}"
+      SPRING_DATASOURCE_PASSWORD: "{{ db_password }}"

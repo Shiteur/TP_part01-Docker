@@ -79,17 +79,22 @@ jobs:
           pip install ansible
           ansible-galaxy collection install community.docker
 
-      - name: Set up SSH
+      - name: Set up SSH and Ansible Vault
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           mkdir -p ~/.ssh
           printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 400 ~/.ssh/deploy_key
+        
+          mkdir -p ~/.ansible
+          printf "%s\n" "$VAULT_PASS" > ~/.ansible/vault_pass
+          chmod 400 ~/.ansible/vault_pass
+
           ssh-keyscan -H thomas.danjou.takima.school >> ~/.ssh/known_hosts
 
-      - name: Run playbook
-        working-directory: ansible
-        run: >
+      - name: Run playbook in Docker
+        run: |
           ansible-playbook -i inventories/setup.yml playbook.yml
           -e ansible_ssh_private_key_file=~/.ssh/deploy_key

@@ -6,6 +6,9 @@ target/
 .idea/
 *.iml
 .vscode/
+#Vault
+vault_pass*
+*.pem
 
 # OS
 .DS_Store
