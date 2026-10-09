@@ -82,19 +82,28 @@ jobs:
       - name: Set up SSH and Ansible Vault
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           mkdir -p ~/.ssh
           printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 400 ~/.ssh/deploy_key
-        
-          mkdir -p ~/.ansible
-          printf "%s\n" "$VAULT_PASS" > ~/.ansible/vault_pass
-          chmod 400 ~/.ansible/vault_pass
 
           ssh-keyscan -H thomas.danjou.takima.school >> ~/.ssh/known_hosts
 
+      - name: Build Ansible image
+        run: docker build -f ansible/Dockerfile.ansible -t ansible-runner ansible
+
       - name: Run playbook in Docker
+        env:
+          VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
-          ansible-playbook -i inventories/setup.yml playbook.yml
-          -e ansible_ssh_private_key_file=~/.ssh/deploy_key
+          mkdir -p ~/.ansible
+          printf "%s\n" "$VAULT_PASS" > ~/.ansible/vault_pass
+          chmod 400 ~/.ansible/vault_pass
+          docker run --rm \
+            -v "${{ github.workspace }}/ansible:/ansible" \
+            -v "~/.ssh:/root/.ssh:ro" \
+            -v "~/.ansible/vault_pass:/vault_pass:ro" \
+            ansible-runner \
+            -i inventories/setup.yml playbook.yml \
+            --vault-password-file /vault_pass \
+            -e ansible_ssh_private_key_file=/root/.ssh/deploy_key
