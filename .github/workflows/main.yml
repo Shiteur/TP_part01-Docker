@@ -31,9 +31,11 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v4
 
-      - uses: docker/login-action@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -42,34 +44,34 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./simpleapi
-          push: true
-          tags: blueph0enix/simpleapi:1.0
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/simpleapi:latest
 
       - name: Build and database
         uses: docker/build-push-action@v6
         with:
           context: ./Database
-          push: true
-          tags: blueph0enix/my-database:1.0
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-database:latest
 
       - name: Build and push httpd
         uses: docker/build-push-action@v6
         with:
           context: ./HttpServer
-          push: true
-          tags: blueph0enix/my-httpd:1.0
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd:latest
 
       - name: Build and push front
         uses: docker/build-push-action@v6
         with:
           context: ./front
-          push: true
-          tags: blueph0enix/my-front:1.0
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-front:1.0
 
 
   deploy:
     needs: build-and-push
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: vars.ENABLE_DEPLOY == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
