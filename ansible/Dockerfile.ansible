@@ -1,0 +1,13 @@
+FROM python:3.12-alpine
+
+# ssh pour se connecter au serveur, git/bash utiles à certains modules
+RUN apk add --no-cache openssh-client
+
+# Ansible + SDK Docker + collection utilisée par tes rôles
+RUN pip install --no-cache-dir ansible docker \
+ && ansible-galaxy collection install community.docker
+
+WORKDIR /ansible
+
+# les arguments du "docker run" sont passés directement à ansible-playbook
+ENTRYPOINT ["ansible-playbook"]
