@@ -115,13 +115,13 @@ jobs:
         env:
           VAULT_PASS: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
-          mkdir -p ~/.ansible
-          printf "%s\n" "$VAULT_PASS" > ~/.ansible/vault_pass
-          chmod 400 ~/.ansible/vault_pass
+          mkdir -p "$HOME/.ansible"
+          printf "%s\n" "$VAULT_PASS" > "$HOME/.ansible/vault_pass"
+          chmod 444 "$HOME/.ansible/vault_pass"
           docker run --rm \
             -v "${{ github.workspace }}/ansible:/ansible" \
-            -v "~/.ssh:/root/.ssh:ro" \
-            -v "~/.ansible/vault_pass:/vault_pass:ro" \
+            -v "$HOME/.ssh:/root/.ssh:ro" \
+            -v "$HOME/.ansible/vault_pass:/vault_pass:ro" \
             ansible-runner \
             -i inventories/setup.yml playbook.yml \
             --vault-password-file /vault_pass \
