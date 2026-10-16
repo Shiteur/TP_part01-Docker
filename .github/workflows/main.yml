@@ -27,7 +27,7 @@ jobs:
         run: mvn clean verify --file ./simpleapi/pom.xml
 
       - name: Use SonarCloud Scan
-        run: mvn -B verify sonar:sonar -Dsonar.projectKey=Shiteur_TP_part01-Docker -Dsonar.organization=shiteur -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file ./simpleapi/pom.xml
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar -Dsonar.projectKey=Shiteur_TP_part01-Docker -Dsonar.organization=shiteur -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file ./simpleapi/pom.xml
 
 
   build-and-push:
