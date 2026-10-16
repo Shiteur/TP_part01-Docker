@@ -26,12 +26,6 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify --file ./simpleapi/pom.xml
 
-      - name: Check token present
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          if [ -z "$SONAR_TOKEN" ]; then echo "SONAR_TOKEN est VIDE"; else echo "SONAR_TOKEN présent (${#SONAR_TOKEN} caractères)"; fi
-
       - name: Use SonarCloud Scan
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Shiteur_TP_part01-Docker -Dsonar.organization=shiteur -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}  --file ./simpleapi/pom.xml
 
